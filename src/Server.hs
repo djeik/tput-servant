@@ -49,7 +49,7 @@ down :: FilePath -> FilePath -> Handler T.Text
 down db path = do
     text <- liftIO $ (readFile (db </> path) >>= return . Just) `catch` fail
     case text of
-        Nothing -> left err404
+        Nothing -> throwError err404
         Just t -> return t
     where fail :: SomeException -> IO (Maybe T.Text)
           fail = const (return Nothing)
