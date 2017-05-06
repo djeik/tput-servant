@@ -1,7 +1,7 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeOperators #-}
 
-module Server 
+module Server
 ( ServerConf(..)
 , defaultServerConf
 , server
