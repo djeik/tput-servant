@@ -23,7 +23,7 @@ executable tput-servant
     base >=4.7 && <4.10,
     wai >=3.0 && <4.0,
     warp >=3.0 && <4.0,
-    servant-server >=0.4 && <1.0,
+    servant-server >=0.10 && <1.0,
     text >=1.0 && <2.0,
     either >=4.0 && <5.0,
     transformers >=0.4 && <1.0,
