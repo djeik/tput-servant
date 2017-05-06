@@ -27,7 +27,7 @@ type TPutAPI = "files"
           :<|> "files"
                    :> Capture "path" FilePath
                    :> ReqBody '[PlainText] T.Text
-                   :> Post '[PlainText] ()
+                   :> Post '[PlainText] String
           :<|> "list"
                    :> Get '[PlainText] T.Text
 
@@ -54,8 +54,8 @@ down db path = do
     where fail :: SomeException -> IO (Maybe T.Text)
           fail = const (return Nothing)
 
-up :: FilePath -> FilePath -> T.Text -> Handler ()
-up db path content = liftIO $ writeFile (db </> path) content
+up :: FilePath -> FilePath -> T.Text -> Handler String
+up db path content = liftIO $ writeFile (db </> path) content *> pure "ok"
 
 ls :: FilePath -> Handler T.Text
 ls db = do
