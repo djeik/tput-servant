@@ -11,6 +11,7 @@ where
 
 import           Prelude                    hiding ( readFile, writeFile )
 import           Control.Applicative
+import           Data.List                  ( sort )
 import           Control.Monad.Trans.Either
 import           Control.Monad.IO.Class
 import           Control.Exception          ( catch, SomeException )
