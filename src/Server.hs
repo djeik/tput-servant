@@ -1,6 +1,7 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE ViewPatterns #-}
 
 module Server
 ( ServerConf(..)
@@ -25,10 +26,10 @@ import           System.FilePath.Posix      ( (</>) )
 import           System.Directory           ( getDirectoryContents )
 
 type TPutAPI = "files"
-                   :> Capture "path" FilePath
+                   :> CaptureAll "path" FilePath
                    :> Get '[PlainText] T.Text
           :<|> "files"
-                   :> Capture "path" FilePath
+                   :> CaptureAll "path" FilePath
                    :> ReqBody '[PlainText] T.Text
                    :> Post '[PlainText] String
           :<|> "list"
@@ -68,18 +69,20 @@ server conf = down (basedir conf)
          :<|> recv (messages conf)
          :<|> send (messages conf)
 
-down :: FilePath -> FilePath -> Handler T.Text
-down db path = do
+down :: FilePath -> [FilePath] -> Handler T.Text
+down db (foldr1 (</>) -> path) = do
     liftIO $ putStrLn "download"
     text <- liftIO $ (readFile (db </> path) >>= return . Just) `catch` fail
     case text of
         Nothing -> throwError err404
         Just t -> return t
     where fail :: SomeException -> IO (Maybe T.Text)
-          fail = const (return Nothing)
+          fail _ = do
+            putStrLn $ "failed to read " ++ path
+            pure Nothing
 
-up :: FilePath -> FilePath -> T.Text -> Handler String
-up db path content = liftIO $ writeFile (db </> path) content *> pure "ok"
+up :: FilePath -> [FilePath] -> T.Text -> Handler String
+up db (foldr1 (</>) -> path) content = liftIO $ writeFile (db </> path) content *> pure "ok"
 
 ls :: FilePath -> Handler T.Text
 ls db = do
